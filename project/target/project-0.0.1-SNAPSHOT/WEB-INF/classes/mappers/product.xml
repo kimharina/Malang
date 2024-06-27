@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mapper 기본 코드 -->
+	<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<!-- mybatis 영역은 package로 지정했지만 정확한 파일명을 Mapping  -->	
+	<mapper namespace="com.care.project.product.IProductMapper">
+		<insert id="insertCategoryProc" parameterType="com.care.project.product.CategoryDTO">
+			INSERT INTO categoryDb (categoryid, path, name, depth) VALUES(#{categoryId},#{path},#{name},#{depth})
+		</insert>
+		
+		<select id="cateList" resultType="com.care.project.product.CategoryDTO">
+			SELECT * FROM categoryDB WHERE path LIKE #{select}||'%'||'%' AND depth=1
+		</select>
+		
+		<select id="getCatePath">
+			SELECT path FROM categoryDB WHERE categoryId=#{categoryId}
+		</select>
+		
+		<select id="getCategory" resultType="com.care.project.product.CategoryDTO">
+			SELECT * FROM categoryDB WHERE categoryId=#{categoryId}
+		</select>
+		
+		<select id="getCategoryName">
+			SELECT name FROM categoryDB WHERE categoryId = #{categoryId}
+		</select>
+		
+		<select id="getCategoryNextId">
+			SELECT nvl(max(categoryId),0) + 1 FROM categoryDB
+		</select>
+		
+		<select id="cateList_d1" resultType="com.care.project.product.CategoryDTO">
+			SELECT * FROM categoryDB WHERE path LIKE '%'||#{catePath}||'%' AND depth=2
+		</select>
+		
+		<select id="cateList_d2" resultType="com.care.project.product.CategoryDTO">
+			SELECT * FROM categoryDB WHERE path LIKE '%'||#{catePath}||'%'
+		</select>
+		
+		<select id="getCategoryId_depth0">
+			SELECT categoryId FROM categoryDB WHERE path LIKE #{path}||'%'||'%' AND depth > 1
+		</select>
+		
+		<select id="getCategoryId_depth1">
+			SELECT categoryId FROM categoryDB WHERE path LIKE '%'||#{path}||'%' AND depth > 1
+		</select>
+		
+			
+		<select id="cateReset" resultType="com.care.project.product.CategoryDTO">
+			SELECT * FROM  categoryDB WHERE depth = #{select}
+		</select>
+		
+		<select id="cateListAd_default" resultType="com.care.project.product.CategoryDTO">
+			SELECT * FROM categoryDB WHERE depth > 1
+		</select>
+		
+		<select id="cateListAd" resultType="com.care.project.product.CategoryDTO">
+			SELECT * FROM categoryDB WHERE path LIKE '%'||#{catePath}||'%' AND depth>1
+		</select>
+		
+		<update id="updateCategoryProc" parameterType="com.care.project.product.CategoryDTO">
+			UPDATE categoryDB SET path=#{path}, name=#{name}, depth=#{depth} WHERE categoryId=#{categoryId}
+		</update>
+		
+		<delete id="deleteCategory">
+			DELETE FROM categoryDB WHERE categoryId = #{categoryId}
+		</delete>
+		
+		
+		<insert id="insertProduct" parameterType="com.care.project.product.ProductDTO">
+			<selectKey order="BEFORE" keyProperty="productNo" resultType="int">
+				SELECT nvl(max(productNo),0) + 1 FROM productDB
+			</selectKey>		
+				INSERT INTO productDB VALUES (#{productNo}, #{userId}, #{categoryId}, #{category}, #{productCount}, #{productName},
+				#{fileName}, #{price}, #{priceOutput}, #{productSize}, #{productContent}, #{sellLocation}, #{productCondition}, #{delCharge}, #{delChargeOutput}, sysdate, #{viewCount}, #{sellState})
+		</insert>
+		
+		<select id="listProduct" resultType="com.care.project.product.ProductDTO">
+			SELECT B.* FROM (
+			SELECT ROWNUM as r, A.*
+			FROM (SELECT * FROM productDB ORDER BY productNo DESC)A)B
+			WHERE B.r BETWEEN #{begin} AND #{end}
+		</select>
+		
+		<select id="getlistProductAdPriceDESC">
+			SELECT B.* FROM (
+			SELECT ROWNUM as r, A.*
+			FROM (SELECT * FROM productDB ORDER BY price DESC)A)B
+			WHERE B.r BETWEEN #{begin} AND #{end}
+		</select>
+		
+		<select id="getlistProductAdPriceASC">
+			SELECT B.* FROM (
+			SELECT ROWNUM as r, A.*
+			FROM (SELECT * FROM productDB ORDER BY price ASC)A)B
+			WHERE B.r BETWEEN #{begin} AND #{end}
+		</select>
+		
+		<select id="getlistProductAdViewCountDESC">
+			SELECT B.* FROM (
+			SELECT ROWNUM as r, A.*
+			FROM (SELECT * FROM productDB ORDER BY viewCount DESC)A)B
+			WHERE B.r BETWEEN #{begin} AND #{end}
+		</select>
+		
+		<select id="getlistProductAdViewCountASC">
+			SELECT B.* FROM (
+			SELECT ROWNUM as r, A.*
+			FROM (SELECT * FROM productDB ORDER BY viewCount ASC)A)B
+			WHERE B.r BETWEEN #{begin} AND #{end}
+		</select>
+		
+		<select id="getlistProductAdInsertDateDESC">
+			SELECT B.* FROM (
+			SELECT ROWNUM as r, A.*
+			FROM (SELECT * FROM productDB ORDER BY insertDate DESC)A)B
+			WHERE B.r BETWEEN #{begin} AND #{end}
+		</select>
+		
+		<select id="getlistProductSearch" resultType="com.care.project.product.ProductDTO">
+			SELECT B.* FROM (
+			SELECT ROWNUM as r, A.*
+			FROM (SELECT * FROM productDB WHERE productName LIKE '%'||#{search}||'%' OR category LIKE '%'||#{search}||'%')A)B
+			WHERE B.r BETWEEN #{begin} AND #{end}
+				
+		</select>
+		
+		<select id="getProduct" resultType="com.care.project.product.ProductDTO">
+			SELECT * FROM productDB WHERE categoryId = #{categoryId} AND productNo = #{productNo}
+		</select>
+		
+		<select id="getProductCount">
+			SELECT COUNT(*) FROM productDB<if test="search!='search'">WHERE productName LIKE '%'||#{search}||'%' </if>
+		</select>
+		
+		<delete id="deleteProductProc">
+			DELETE FROM productDB WHERE productNo = #{productNo}
+		</delete>
+		
+		<update id="updateProductProc" parameterType="com.care.project.product.ProductDTO">
+			UPDATE productDB SET categoryId=#{categoryId}, category=#{category},  productCount=#{productCount}, productName=#{productName}, fileName=#{fileName},
+								 price=#{price}, productSize=#{productSize}, productContent=#{productContent}, sellLocation=#{sellLocation}, 
+								 productCondition=#{productCondition}, delCharge=#{delCharge}, priceOutput=#{priceOutput},
+								 delChargeOutput=#{delChargeOutput} WHERE productNo = #{productNo}
+		</update>
+		
+		<select id="getProductcontent" resultType="com.care.project.product.ProductDTO">
+			SELECT * FROM productDB WHERE productNo = #{productNo}
+		</select>
+		
+		<update id="plusViewCount">
+			UPDATE productDB SET viewCount = viewCount+1 WHERE productNo = #{productNo}
+		</update>
+		
+		<select id="listProductView" resultType="com.care.project.product.ProductDTO">
+			SELECT * FROM productDB <if test="sellState=='sellProduct'">WHERE sellState=0</if> ORDER BY viewCount DESC 
+		</select>
+		
+		<select id="getAddress">
+		SELECT m.address
+		FROM memberDb m
+		WHERE m.userId =
+		(SELECT p.userId FROM productDb p WHERE p.productNo =
+		#{productNo})
+	</select>
+
+	<insert id="order" parameterType="com.care.project.product.OrderDTO">
+		INSERT INTO orderDb VALUES (#{imp_uid},#{productNo},#{productName},#{priceOutput},#{buyer},#{address},#{orderDate})
+	</insert>
+
+	<update id="sellState">
+		UPDATE productDb SET sellState=#{res} 
+		WHERE productNo = #{productNo}
+	</update>
+	<select id="OrderList">
+		SELECT A.* FROM
+		( SELECT ROWNUM as r, B.* FROM
+		( SELECT orderDb.* FROM orderDb WHERE buyer=#{userName} <if test="search!='search'"> AND productName like '%'||#{search}||'%' </if>
+		ORDER BY orderDate DESC
+		) B) A
+		WHERE A.r BETWEEN #{begin} AND #{end}
+				
+	</select>
+
+	<select id="sellers">
+		SELECT B.* FROM
+		( SELECT ROWNUM as r, A.* FROM
+		( SELECT productDB.* FROM productDB WHERE productNo in(SELECT productNo FROM orderDb WHERE buyer=#{userName} 
+		<if test="search!='search'">AND productName like '%'||#{search}||'%'</if>)
+		ORDER BY productNo DESC
+		)A )B WHERE B.r BETWEEN #{begin} AND #{end}		
+	</select>
+
+	<select id="orderTotalCount">
+		SELECT count(*) FROM orderDb
+		WHERE buyer=#{userName} <if test="search!='search'">AND productName like '%'||#{search}||'%'</if>
+	</select>
+	
+	<select id="offShop"
+		resultType="com.care.project.product.ShopDTO">
+		SELECT * FROM locationDB
+	</select>
+
+	<select id="offShopInfo"
+		resultType="com.care.project.product.ShopDTO">
+		SELECT * FROM locationDB WHERE shopId=#{shopId}
+	</select>
+   
+	</mapper>

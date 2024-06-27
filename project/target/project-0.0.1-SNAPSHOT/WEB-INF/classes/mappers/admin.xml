@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.care.project.admin.IAdminMapper">
+
+<select id="memberListAd" resultType="com.care.project.member.MemberDTO">
+      <choose>
+         <when test="select == 'mobile'">
+            SELECT AAA.*
+            FROM (SELECT ROWNUM as r, userId, userName, pw, birth, email, mobile,
+            address, joindate FROM memberDB
+            WHERE mobile like '%' || #{search} || '%')AAA
+            WHERE AAA.r BETWEEN #{begin} AND #{end}
+         </when>
+         <when test="select == 'userId'">
+            SELECT AAA.*
+            FROM (SELECT ROWNUM as r, userId, userName, pw, birth, email, mobile,
+            address, joindate FROM memberDB
+            WHERE userId like '%' || #{search} || '%')AAA
+            WHERE AAA.r BETWEEN #{begin} AND #{end}
+         </when>
+         <otherwise>
+            SELECT AAA.*
+            FROM (SELECT ROWNUM as r, userId, userName, pw, birth, email, mobile,
+            address, joindate FROM memberDB)AAA
+            WHERE AAA.r BETWEEN #{begin} AND #{end}
+         </otherwise>
+      </choose>
+   </select>
+
+
+   <select id="totalCountAd">
+      <choose>
+         <when test="select == 'userId'">
+            SELECT count(userId) FROM memberDB WHERE userId like '%' || #{search} ||
+            '%'
+         </when>
+         <when test="select == 'mobile'">
+            SELECT count(userId) FROM memberDB WHERE mobile like '%' || #{search} ||
+            '%'
+         </when>
+         <otherwise>
+            SELECT count(userId) FROM memberDB
+         </otherwise>
+      </choose>
+   </select>
+
+   <select id="userInfo" resultType="com.care.project.member.MemberDTO">
+   		SELECT * FROM memberDB WHERE userId = #{userId}
+   </select>
+   
+   <delete id="deleteMemberAd">
+   		DELETE FROM memberDB WHERE userId = #{userId}
+   </delete>
+   
+   <update id="updateMemberAd" parameterType="com.care.project.member.MemberDTO">
+   		UPDATE memberDB SET userName=#{userName}, birth=#{birth}, email=#{email}, address=#{address}, mobile=#{mobile}
+   		WHERE userId = #{userId}
+   </update>
+   
+	<select id="getLocation" resultType="com.care.project.admin.LocationDTO">
+		SELECT * FROM locationDB WHERE shopId = #{shopId}
+	</select>
+   
+   </mapper>
