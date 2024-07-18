@@ -3,6 +3,7 @@ package com.care.project;
 import java.util.HashMap;
 
 import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import net.nurigo.java_sdk.api.Message;
@@ -10,13 +11,14 @@ import net.nurigo.java_sdk.exceptions.CoolsmsException;
 
 @Service
 public class messageService {
+	
+	 @Value ("${message.api_key}") private String api_key;	
+	 @Value ("${message.api_secret}") private String api_secret;
 
 	public void certifiedPhoneNumber(String userPhoneNumber, int randomNumber) {
-		String api_key = "NCSFHTPN3BPQOYM9";
-	    String api_secret = "F32CSONYVHCAHCWWKQEHYG1KYSULWDNO";
+		
 	    Message coolsms = new Message(api_key, api_secret);
-
-	   
+	    
 	    // 4 params(to, from, type, text) are mandatory. must be filled
 	    HashMap<String, String> params = new HashMap<String, String>();
 	    params.put("to", userPhoneNumber);    // 수신전화번호

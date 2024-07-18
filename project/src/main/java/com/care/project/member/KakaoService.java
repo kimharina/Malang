@@ -41,9 +41,9 @@ public class KakaoService {
 		
 			conn.setRequestMethod("POST"); // POST 요청을 위해 기본값 false에서 setDoOutput을 true로 변경
 			conn.setDoOutput(true); // POST 메소드를 이용해서 데이터를 전달하기 위한 설정
-			// 기본 outputStream을 통해 문자열로 처리할 수 있는
-			// OutPutStreamWriter 변환 후 처리속도를 빠르게 하기위한
-			// BufferedWriter로 변환해서 사용한다.
+									// 기본 outputStream을 통해 문자열로 처리할 수 있는
+									// OutPutStreamWriter 변환 후 처리속도를 빠르게 하기위한
+									// BufferedWriter로 변환해서 사용한다.
 			BufferedWriter bw = new BufferedWriter(
 					new OutputStreamWriter(conn.getOutputStream())
 					);
